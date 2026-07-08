@@ -200,6 +200,59 @@ function RealisticPetal({ size = 20, className = "" }: { size?: number; classNam
   );
 }
 
+function Countdown() {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    const target = new Date("2026-12-05T11:00:00").getTime();
+
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const difference = target - now;
+
+      if (difference <= 0) {
+        clearInterval(interval);
+        return;
+      }
+
+      setTimeLeft({
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((difference % (1000 * 60)) / 1000),
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="flex justify-center gap-3 md:gap-6 mt-6 md:mt-8">
+      {[
+        { label: "Days", value: timeLeft.days },
+        { label: "Hours", value: timeLeft.hours },
+        { label: "Minutes", value: timeLeft.minutes },
+        { label: "Seconds", value: timeLeft.seconds },
+      ].map((item, idx) => (
+        <div key={idx} className="flex flex-col items-center">
+          <div className="w-14 h-16 md:w-20 md:h-24 bg-[#faf8f5] rounded-xl md:rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-[#e4cfa2]/30 flex items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-b from-white/60 to-transparent pointer-events-none" />
+            <span className="serif text-2xl md:text-4xl text-[#5c5042] font-medium z-10">{item.value.toString().padStart(2, '0')}</span>
+          </div>
+          <span className="text-[9px] md:text-xs uppercase tracking-[0.2em] text-[#8c7b64] font-semibold mt-3 md:mt-4">
+            {item.label}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 type Attendance = "yes" | "no";
 type PartyType = "individual" | "family";
 type MealPreference = "veg" | "non-veg";
@@ -315,7 +368,7 @@ function RSVPForm() {
       <p className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-widest mb-4 md:mb-6 text-center leading-relaxed">
         Please let us know by
         <br />
-        04.05.2026
+        30.09.2026
       </p>
 
       <form onSubmit={submit} className="space-y-4 md:space-y-4 px-1 md:px-2">
@@ -512,261 +565,70 @@ export default function App() {
 
       <motion.div className="fixed top-0 left-0 right-0 h-1 bg-sage origin-left z-[1000]" style={{ scaleX }} />
 
-      <motion.button
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setIsMuted((m) => !m)}
-        className="fixed bottom-6 right-6 z-[500] w-12 h-12 rounded-full bg-sage text-white shadow-2xl flex items-center justify-center backdrop-blur-md border border-white/20"
-      >
-        {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} className="animate-pulse" />}
-      </motion.button>
+
 
       <AnimatePresence>
         {!isOpened && (
           <motion.div
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.8, delay: 0.5 } }}
-            className="fixed inset-0 z-[100] bg-paper/95 backdrop-blur-md flex items-center justify-center p-6 overflow-hidden"
+            className="fixed inset-0 z-[100] bg-[#efe7db] flex flex-col items-center justify-center px-4 py-8 overflow-hidden"
           >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 2, delay: 0.5, ease: "easeOut" }}
-              className="absolute top-12 md:top-24 left-0 right-0 text-center z-10 pointer-events-none"
-            >
-              <h1 className="serif text-4xl md:text-6xl text-sage/80 font-light tracking-[0.2em] drop-shadow-xl">
-                Zerlin & Hashimi
-              </h1>
-              <p className="mt-3 text-[10px] md:text-xs uppercase tracking-[0.6em] text-sage/60 font-bold">
-                23 May 2026
-              </p>
-            </motion.div>
-
-            {!reduceEffects && (
-              <>
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] md:w-[90vw] md:h-[90vw] rounded-full border-2 border-sage/10 border-dashed pointer-events-none z-0 opacity-50"
-                />
-                <motion.div
-                  animate={{ rotate: -360 }}
-                  transition={{ duration: 180, repeat: Infinity, ease: "linear" }}
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] md:w-[70vw] md:h-[70vw] rounded-full border border-sage/10 pointer-events-none z-0 opacity-40 flex items-center justify-center p-8"
-                >
-                  <div className="w-full h-full rounded-full border-[0.5px] border-sage/5" />
-                </motion.div>
-
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute w-[80vw] md:w-[600px] h-[80vw] md:h-[600px] bg-sage/20 rounded-full blur-[80px] md:blur-[120px] pointer-events-none z-0"
-                />
-              </>
-            )}
-
-            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-              <motion.div
-                animate={{
-                  x: ["-10%", "10%", "-10%"],
-                  y: ["-5%", "5%", "-5%"],
-                  opacity: [0.6, 0.9, 0.6],
-                }}
-                transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -top-[30%] -left-[20%] w-[140%] h-[140%] rounded-full bg-[radial-gradient(circle,rgba(196,113,74,0.45)_0%,transparent_60%)] blur-3xl"
-              />
-              <motion.div
-                animate={{
-                  x: ["10%", "-10%", "10%"],
-                  y: ["5%", "-5%", "5%"],
-                  opacity: [0.5, 0.8, 0.5],
-                }}
-                transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-[30%] -right-[20%] w-[140%] h-[140%] rounded-full bg-[radial-gradient(circle,rgba(156,132,112,0.4)_0%,transparent_60%)] blur-3xl"
-              />
-
-              {!reduceEffects &&
-                [...Array(40)].map((_, i) => (
-                  <motion.div
-                    key={`dust-${i}`}
-                    className="absolute pointer-events-none"
-                    style={{
-                      left: `${Math.random() * 100}%`,
-                      top: `${Math.random() * 100}%`,
-                    }}
-                    animate={{
-                      y: [0, -Math.random() * 500 - 300],
-                      x: [0, (Math.random() - 0.5) * 200],
-                      rotate: [0, Math.random() * 360],
-                      opacity: [0, Math.random() * 0.5 + 0.2, 0],
-                      scale: [0.5, Math.random() * 1 + 0.5, 0.5],
-                    }}
-                    transition={{
-                      duration: 10 + Math.random() * 20,
-                      repeat: Infinity,
-                      delay: Math.random() * 10,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    {i % 4 === 0 ? (
-                      <Flower2 className="text-sage/20 w-4 h-4 md:w-6 md:h-6" />
-                    ) : (
-                      <div
-                        className="rounded-full shadow-[0_0_15px_rgba(196,113,74,0.4)]"
-                        style={{
-                          backgroundColor: i % 2 === 0 ? "#C4714A" : "#A84C2C",
-                          width: Math.random() * 6 + 2 + "px",
-                          height: Math.random() * 6 + 2 + "px",
-                          filter: `blur(${Math.random() * 1}px)`,
-                        }}
-                      />
-                    )}
-                  </motion.div>
-                ))}
-
-              {!reduceEffects &&
-                [...Array(20)].map((_, i) => {
-                  const isHeart = i % 2 === 0;
-                  const size = isHeart ? Math.random() * 20 + 10 : Math.random() * 25 + 15;
-                  return (
-                    <motion.div
-                      key={`loading-falling-${i}`}
-                      className="absolute pointer-events-none z-10"
-                      initial={{ top: "-10%", left: `${Math.random() * 100}%`, rotate: 0, opacity: 0 }}
-                      animate={{
-                        top: "110%",
-                        left: [
-                          `${Math.random() * 100}%`,
-                          `${Math.random() * 100 + (Math.random() - 0.5) * 20}%`,
-                          `${Math.random() * 100}%`,
-                        ],
-                        rotate: 360 * (Math.random() > 0.5 ? 1 : -1),
-                        opacity: [0, 0.6, 0],
-                      }}
-                      transition={{
-                        duration: 15 + Math.random() * 15,
-                        repeat: Infinity,
-                        delay: Math.random() * 10,
-                        ease: "linear",
-                      }}
-                    >
-                      {isHeart ? (
-                        <Heart className="text-sage" fill="currentColor" size={size} />
-                      ) : (
-                        <RealisticPetal size={size} />
-                      )}
-                    </motion.div>
-                  );
-                })}
-
-              {!reduceEffects &&
-                [...Array(12)].map((_, i) => (
-                  <motion.div
-                    key={`bokeh-${i}`}
-                    className="absolute rounded-full mix-blend-soft-light"
-                    style={{
-                      backgroundColor: i % 2 === 0 ? "#9C8470" : "#F5EFE0",
-                      opacity: 0.3,
-                      width: Math.random() * 150 + 100 + "px",
-                      height: Math.random() * 150 + 100 + "px",
-                      left: `${Math.random() * 100}%`,
-                      bottom: `-20%`,
-                      filter: `blur(${Math.random() * 20 + 30}px)`,
-                    }}
-                    animate={{
-                      y: [0, -1200],
-                      x: [(Math.random() - 0.5) * 400, (Math.random() - 0.5) * 400],
-                      opacity: [0, 0.4, 0],
-                    }}
-                    transition={{
-                      duration: 25 + Math.random() * 35,
-                      repeat: Infinity,
-                      delay: Math.random() * 20,
-                      ease: "linear",
-                    }}
-                  />
-                ))}
-            </div>
+            {/* Background Texture for Premium Feel */}
+            <div className="absolute inset-0 opacity-[0.35] bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#fff8ee]/70 via-transparent to-[#d4b882]/20 pointer-events-none" />
 
             <motion.div
-              layoutId="envelope-box"
-              style={{ perspective: 1500 }}
-              animate={!reduceEffects && !isFlapOpen ? { y: [0, -10, 0] } : {}}
-              transition={!reduceEffects ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { duration: 0 }}
-              className="relative w-full max-w-2xl h-80 md:h-[450px] rounded-[2.25rem] shadow-[0_34px_80px_-22px_rgba(0,0,0,0.55)] flex flex-col items-center justify-center z-10 overflow-hidden"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
+              className="flex flex-col items-center z-10 w-full mb-10 md:mb-12 pointer-events-none mt-4 md:mt-0"
             >
-              {/* premium envelope material */}
-              <div className="absolute inset-0 bg-gradient-to-b from-sage via-sage/90 to-rust" />
-              <div className="absolute inset-0 opacity-25 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] pointer-events-none" />
-              <div className="absolute inset-0 bg-gradient-to-br from-white/16 via-transparent to-umber/25 pointer-events-none" />
-              <div className="absolute inset-[10px] rounded-[1.8rem] border border-white/18 pointer-events-none" />
-              <div className="absolute inset-[16px] rounded-[1.55rem] border border-umber/10 pointer-events-none" />
-              {!reduceEffects && (
-                <motion.div
-                  animate={{ opacity: [0.18, 0.32, 0.18], scale: [1, 1.04, 1] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute -top-20 left-1/2 -translate-x-1/2 w-[520px] h-[260px] bg-paper/15 blur-3xl rounded-full pointer-events-none"
-                />
-              )}
-
-              <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4 md:space-y-6">
-                <span className="serif text-white/50 text-lg md:text-3xl tracking-[0.4em] md:tracking-[0.6em] uppercase text-center px-4">
-                  The Invitation
-                </span>
-                <div className="w-10 md:w-16 h-px bg-white/20" />
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 md:w-20 h-[1px] bg-[#d4b882]/60" />
+                <h2 className="serif text-[10px] md:text-xs text-[#8c7b64] tracking-[0.4em] uppercase font-bold">
+                  You are invited
+                </h2>
+                <div className="w-12 md:w-20 h-[1px] bg-[#d4b882]/60" />
               </div>
 
-              <div className="absolute bottom-0 left-0 right-0 h-[65%] bg-white/5 clip-path-envelope-bottom pointer-events-none rounded-b-[2rem]" />
-              <div className="absolute bottom-0 left-0 right-0 h-[65%] bg-gradient-to-t from-umber/35 via-umber/10 to-transparent clip-path-envelope-bottom pointer-events-none rounded-b-[2rem]" />
+              <h1 className="script text-[40px] sm:text-[55px] md:text-[80px] text-[#5c5042] mb-6 drop-shadow-sm leading-[1.1] text-center px-2 whitespace-nowrap">
+                Stephen & Krishani
+              </h1>
+              
+              <div className="flex items-center gap-6 md:gap-8 mt-2">
+                 <p className="serif text-base md:text-xl text-[#8c7b64] tracking-[0.4em] font-light uppercase">
+                   05
+                 </p>
+                 <div className="w-1.5 h-1.5 md:w-2 md:h-2 rotate-45 border border-[#d4b882] bg-transparent opacity-80" />
+                 <p className="serif text-base md:text-xl text-[#8c7b64] tracking-[0.4em] font-light uppercase">
+                   12
+                 </p>
+                 <div className="w-1.5 h-1.5 md:w-2 md:h-2 rotate-45 border border-[#d4b882] bg-transparent opacity-80" />
+                 <p className="serif text-base md:text-xl text-[#8c7b64] tracking-[0.4em] font-light uppercase">
+                   2026
+                 </p>
+              </div>
+            </motion.div>
 
-              <motion.div
-                initial={{ rotateX: 0 }}
-                animate={{ rotateX: isFlapOpen ? 180 : 0, opacity: isFlapOpen ? 0 : 1 }}
-                transition={{ duration: 1, ease: [0.3, 0.1, 0.2, 1] }}
-                style={{ transformOrigin: "top", backfaceVisibility: "hidden" }}
-                className="absolute top-0 left-0 right-0 h-[55%] drop-shadow-2xl z-20 rounded-t-[2.25rem] clip-path-envelope flex flex-col items-center justify-start overflow-hidden pt-8 pointer-events-none"
-              >
-                <div className="absolute inset-0 bg-gradient-to-b from-sage to-rust" />
-                <div className="absolute inset-0 opacity-22 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-b from-white/18 via-transparent to-umber/25" />
-                <div className="absolute top-0 left-0 right-0 h-px bg-white/25" />
-              </motion.div>
-
-              {!isFlapOpen && (
-                <motion.div
-                  initial={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.8, opacity: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="absolute inset-0 z-30 flex flex-col items-center justify-center cursor-pointer"
-                  onClick={handleOpen}
-                >
-                  <motion.div
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={!reduceEffects ? { repeat: Infinity, duration: 3, ease: "easeInOut" } : { duration: 0 }}
-                    className="flex flex-col items-center gap-4 mt-8 md:mt-12 group"
-                  >
-                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full shadow-[0_18px_50px_-18px_rgba(0,0,0,0.65)] flex items-center justify-center relative group-hover:scale-105 transition-transform duration-500 bg-paper/10 border border-white/30 p-1.5 backdrop-blur-md">
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/14 via-transparent to-umber/25 pointer-events-none" />
-                      <div className="w-full h-full rounded-full bg-gradient-to-br from-sage to-rust shadow-[inset_0_-8px_18px_rgba(0,0,0,0.28),0_8px_18px_rgba(0,0,0,0.22)] flex items-center justify-center border border-white/14 relative overflow-hidden">
-                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-20 h-12 bg-paper/25 blur-2xl rounded-full" />
-                        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.35)_0%,transparent_55%)]" />
-                        <Heart className="relative text-paper/90 w-10 h-10 md:w-14 md:h-14 drop-shadow-md mt-1" fill="currentColor" />
-                      </div>
-                    </div>
-
-                    <motion.div
-                      animate={!reduceEffects ? { y: [0, 5, 0] } : { y: 0 }}
-                      transition={!reduceEffects ? { repeat: Infinity, duration: 2, ease: "easeInOut" } : { duration: 0 }}
-                    >
-                      <p className="serif text-white/75 tracking-[0.32em] uppercase text-[10px] md:text-xs whitespace-nowrap">
-                        Tap to break seal
-                      </p>
-                    </motion.div>
-                  </motion.div>
-                </motion.div>
-              )}
+            <motion.div
+              animate={!reduceEffects && !isFlapOpen ? { y: [0, -10, 0] } : {}}
+              transition={!reduceEffects ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { duration: 0 }}
+              className="relative w-full max-w-sm md:max-w-lg z-10 flex flex-col items-center cursor-pointer group px-4"
+              onClick={handleOpen}
+            >
+              <motion.img 
+                src="/envi.png" 
+                alt="Envelope" 
+                className="w-full h-auto drop-shadow-2xl transition-transform duration-700 group-hover:scale-105"
+              />
+              
+              <div className="mt-12 text-center flex flex-col items-center gap-3 opacity-80 group-hover:opacity-100 transition-opacity duration-500">
+                <div className="w-px h-8 bg-gradient-to-b from-[#d4b882] to-transparent animate-pulse" />
+                <p className="serif text-[9px] md:text-xs text-[#8c7b64] tracking-[0.3em] uppercase font-bold">
+                  Tap to open
+                </p>
+              </div>
             </motion.div>
           </motion.div>
         )}
@@ -783,530 +645,245 @@ export default function App() {
         transition={{ duration: 1.2, delay: 0.5, ease: "easeOut" }}
         className="max-w-[1600px] mx-auto px-4 py-10 sm:py-12 md:px-12 md:py-24 flex flex-col gap-10 md:gap-16 relative z-10 min-h-screen"
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={isOpened ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
-          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1], delay: 0.8 }}
-          className="text-center space-y-4 md:space-y-8 mt-4 md:mt-12"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isOpened ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ delay: 1, duration: 1 }}
-            className="flex items-center justify-center gap-4 text-sage/60"
-          >
-            <div className="h-px w-8 md:w-16 bg-current opacity-30" />
-            <p className="text-[10px] md:text-sm uppercase tracking-[0.6em] font-bold">With joy in our hearts</p>
-            <div className="h-px w-8 md:w-16 bg-current opacity-30" />
-          </motion.div>
-
-          <h1 className="flex flex-col items-center px-2">
-            <span className="serif italic text-3xl sm:text-5xl md:text-[8rem] text-sage font-light leading-tight drop-shadow-sm mb-1 md:mb-6">
-              You're Invited!
-            </span>
-            <span className="serif text-sm sm:text-base md:text-4xl text-umber tracking-[0.15em] md:tracking-[0.3em] uppercase font-light">
-              to the wedding of
-            </span>
-          </h1>
-
-          <div className="flex flex-row items-center justify-center gap-2 sm:gap-4 md:gap-16 mt-4 md:mt-8 relative w-full px-2">
-            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-32 bg-sage/5 blur-3xl rounded-full" />
-
-            <motion.h2 whileHover={{ scale: 1.05 }} className="script text-[13vw] sm:text-6xl md:text-9xl text-sage drop-shadow-lg relative z-10 leading-none">
-              Zerlin
-            </motion.h2>
-
-            <div className="relative flex items-center justify-center shrink-0">
-              <div className="h-px w-6 md:w-24 bg-sage/20 hidden md:block" />
-              <div className="relative mx-1 md:mx-4">
-                <Heart className="text-sage/40 w-5 h-5 sm:w-7 sm:h-7 md:w-10 md:h-10 animate-pulse" fill="currentColor" />
-                <motion.div
-                  animate={{ scale: [1, 1.5, 1], opacity: [0, 1, 0] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className="absolute inset-0 bg-sage/20 blur-xl rounded-full"
-                />
-              </div>
-              <div className="h-px w-6 md:w-24 bg-sage/20 hidden md:block" />
-            </div>
-
-            <motion.h2 whileHover={{ scale: 1.05 }} className="script text-[13vw] sm:text-6xl md:text-9xl text-sage drop-shadow-lg relative z-10 leading-none">
-              Hashimi
-            </motion.h2>
-          </div>
-
-          <div className="w-24 md:w-32 h-px bg-gradient-to-r from-transparent via-sage/40 to-transparent mx-auto mt-8" />
-        </motion.div>
 
         {/* Updated premium envelope section */}
-        <div className="flex justify-center w-full mb-8 mt-12 md:mt-28">
+        <div className="flex flex-col items-center justify-center w-full mb-8 mt-24 md:mt-48 relative">
           {!isOpened ? (
             <div className="w-full max-w-3xl relative h-[340px] sm:h-[380px] md:h-[460px]" />
           ) : (
             <motion.div
               layoutId="envelope-box"
               transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
-              className="w-full max-w-4xl relative cursor-default"
+              className="w-full max-w-2xl relative cursor-default"
               style={{
-                height: isSmallScreen ? "520px" : "clamp(420px, 52vw, 620px)",
+                height: isSmallScreen ? "550px" : "clamp(450px, 55vw, 680px)",
               }}
             >
-              {/* ambient depth */}
-              <motion.div
-                animate={{ scale: [1, 1.08, 1], opacity: [0.28, 0.45, 0.28] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute inset-x-6 sm:inset-x-10 top-[24%] h-44 sm:h-52 bg-sage/25 blur-[70px] rounded-full pointer-events-none z-0"
-              />
-              <div className="absolute inset-x-10 top-[18%] h-20 bg-sage/12 blur-[50px] rounded-full pointer-events-none z-0" />
-
-              {/* floating dust glow */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-                {[...Array(10)].map((_, i) => (
-                  <motion.div
-                    key={`envelope-speck-${i}`}
-                    className={`absolute rounded-full ${i % 2 === 0 ? "bg-sand" : "bg-sage"}`}
-                    style={{
-                      width: `${Math.random() * 6 + 3}px`,
-                      height: `${Math.random() * 6 + 3}px`,
-                      left: `${Math.random() * 100}%`,
-                      top: `${Math.random() * 60 + 8}%`,
-                      opacity: 0.12,
-                      filter: "blur(1px)",
-                    }}
-                    animate={{
-                      y: [0, -18, 0],
-                      x: [0, (Math.random() - 0.5) * 14, 0],
-                      opacity: [0.08, 0.2, 0.08],
-                    }}
-                    transition={{
-                      duration: 4 + Math.random() * 4,
-                      repeat: Infinity,
-                      delay: Math.random() * 3,
-                      ease: "easeInOut",
-                    }}
-                  />
-                ))}
+              {/* envelope body back - cream/gold */}
+              <div className="hidden absolute bottom-0 left-0 right-0 h-[64%] sm:h-[66%] md:h-[68%] rounded-b-[1.5rem] overflow-hidden z-10 shadow-[0_24px_70px_-12px_rgba(200,180,140,0.45)]">
+                <div className="absolute inset-0 bg-gradient-to-b from-[#f8eecf] to-[#e4cfa2]" />
+                <div className="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
               </div>
 
-              {/* envelope body back */}
-              <div className="absolute bottom-0 left-0 right-0 h-[64%] sm:h-[66%] md:h-[68%] rounded-b-[2.5rem] overflow-hidden z-10 shadow-[0_24px_70px_-12px_rgba(61,34,21,0.55)]">
-                <div className="absolute inset-0 bg-gradient-to-b from-umber via-rust/35 to-sienna/55" />
-                <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-umber/25" />
-                <div className="absolute inset-x-0 top-0 h-[2px] bg-white/8" />
-                <div className="absolute inset-x-10 top-3 h-px bg-sand/15" />
-                <div className="absolute bottom-0 left-0 right-0 h-px bg-white/10" />
-                <div className="absolute top-0 bottom-0 left-0 w-px bg-white/8" />
-                <div className="absolute top-0 bottom-0 right-0 w-px bg-white/8" />
-                <div className="absolute bottom-5 left-0 right-0 flex flex-col items-center gap-1 pointer-events-none">
-                  <div className="w-16 h-px bg-sand/45" />
-                  <p className="serif italic text-sand/55 text-[10px] tracking-[0.4em] uppercase">Official Invite · 2026</p>
-                  <div className="w-16 h-px bg-sand/45" />
-                </div>
-              </div>
-
-              {/* opened flap */}
+              {/* opened flap - back */}
               <div
-                className="absolute left-0 right-0 z-10 pointer-events-none overflow-hidden"
+                className="hidden absolute left-0 right-0 z-10 pointer-events-none overflow-hidden"
                 style={{
-                  bottom: isSmallScreen ? "62.5%" : "66.2%",
+                  bottom: isSmallScreen ? "63%" : "67%",
                   height: isSmallScreen ? "33%" : "40%",
                 }}
               >
                 <div
-                  className="absolute inset-0 bg-gradient-to-br from-umber/95 via-rust/70 to-sienna/75"
-                  style={{
-                    clipPath: "polygon(0 100%, 50% 0, 100% 100%)",
-                  }}
+                  className="absolute inset-0 bg-gradient-to-t from-[#e4cfa2] to-[#f8eecf]"
+                  style={{ clipPath: "polygon(0 100%, 50% 0, 100% 100%)" }}
                 >
-                  <div className="absolute inset-0 opacity-25 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-white/0 to-transparent" />
+                  <div className="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
                 </div>
-
-                <div
-                  className="absolute inset-0 bg-gradient-to-b from-sage to-rust"
-                  style={{
-                    clipPath: "polygon(3% 100%, 50% 10%, 97% 100%)",
-                  }}
-                >
-                  <div className="absolute inset-0 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-white/0 to-transparent" />
-                </div>
-
-                <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-umber/35 to-transparent" />
               </div>
 
-              {/* invitation card */}
+              {/* invitation card - Arch shape */}
               <motion.div
                 initial={{ y: 120, opacity: 0 }}
-                animate={{
-                  y: isSmallScreen ? -46 : -58,
-                  opacity: 1,
-                }}
+                animate={{ y: isSmallScreen ? -20 : -30, opacity: 1 }}
                 transition={{ duration: 1.4, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute left-3 right-3 sm:left-6 sm:right-6 md:left-16 md:right-16 z-20"
-                style={{
-                  bottom: isSmallScreen ? "30%" : "33%",
-                  top: "auto",
-                }}
+                className="absolute left-6 right-6 sm:left-12 sm:right-12 md:left-20 md:right-20 z-20"
+                style={{ bottom: "25%", top: "auto" }}
               >
-                <div className="absolute -bottom-4 left-6 right-6 h-10 bg-umber/20 blur-xl rounded-full" />
+                <div className="relative bg-[#faf8f5] rounded-[100px] md:rounded-[160px] shadow-xl border-4 border-[#e4cfa2]/40 overflow-hidden min-h-[480px] md:min-h-[580px] flex flex-col items-center pt-8 md:pt-14 pb-14 px-4">
+                  {/* Background texture */}
+                  <div className="absolute inset-0 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] pointer-events-none" />
 
-                <div className="relative bg-paper rounded-[1.6rem] md:rounded-[2rem] shadow-[0_-20px_60px_rgba(0,0,0,0.16),0_10px_30px_rgba(0,0,0,0.08)] border border-sand/35 overflow-hidden">
-                  <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute inset-0 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]" />
-                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-24 bg-sage/12 blur-3xl rounded-full" />
-                    <div className="absolute inset-[10px] border border-taupe/25 rounded-[1.1rem] md:rounded-xl" />
-                    <div className="absolute inset-[16px] border border-sage/15 rounded-[0.9rem] md:rounded-lg" />
-
-                    {[
-                      ["top-3 left-3", "rotate-0"],
-                      ["top-3 right-3", "rotate-90"],
-                      ["bottom-3 left-3", "-rotate-90"],
-                      ["bottom-3 right-3", "rotate-180"],
-                    ].map(([pos, rot], i) => (
-                      <div key={i} className={`absolute ${pos} w-7 h-7`}>
-                        <svg viewBox="0 0 28 28" fill="none" className={`w-full h-full ${rot} opacity-40`}>
-                          <path d="M2 2 C2 2, 14 2, 14 14" stroke="rgb(156 132 112)" strokeWidth="0.8" fill="none" />
-                          <path d="M2 2 C8 2, 2 8, 2 14" stroke="rgb(156 132 112)" strokeWidth="0.8" fill="none" />
-                          <circle cx="4" cy="4" r="1.2" fill="rgb(196 113 74)" opacity="0.5" />
-                          <path d="M6 2 C6 2, 6 6, 10 6" stroke="rgb(196 113 74)" strokeWidth="0.6" fill="none" opacity="0.5" />
-                        </svg>
-                      </div>
-                    ))}
-
-                    <motion.div
-                      animate={{ x: ["-100%", "200%"] }}
-                      transition={{ repeat: Infinity, duration: 4.6, delay: 2, ease: "easeInOut" }}
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent skew-x-12"
-                    />
+                  {/* Top curved text approximation */}
+                  <div className="absolute top-4 w-full flex justify-center pointer-events-none">
+                     <p className="serif text-[8px] md:text-[10px] tracking-[0.2em] text-[#8c7b64] uppercase opacity-70">
+                       Together with their families
+                     </p>
                   </div>
-
-                  {/* content */}
-                  <div className="relative z-10 px-4 pt-4 pb-3 sm:px-6 sm:pt-7 sm:pb-7 md:px-10 md:py-8 flex flex-col items-center text-center gap-0 sm:gap-2 md:gap-3">
-                    {/* top ornament */}
-                    <div className="flex items-center gap-3 w-full max-w-[240px]">
-                      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-taupe/55" />
-                      <motion.div
-                        animate={{ rotate: [0, 10, -10, 0] }}
-                        transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-                      >
-                        <svg viewBox="0 0 16 16" className="w-3 h-3 opacity-50 text-sage" fill="currentColor">
-                          <path d="M8 0 L9.5 6.5 L16 8 L9.5 9.5 L8 16 L6.5 9.5 L0 8 L6.5 6.5 Z" />
-                        </svg>
-                      </motion.div>
-                      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-taupe/55" />
+                  
+                  <div className="flex flex-col items-center text-center w-full z-10 mt-6">
+                    <img src="/images/logo.png" alt="Z&H Logo" className="w-16 h-16 md:w-24 md:h-24 object-contain mb-6 opacity-90" />
+                    
+                    <div className="flex flex-col items-center gap-1 md:gap-2 mb-8">
+                      <span className="script text-[40px] md:text-[56px] text-[#5c5042] leading-[0.9] drop-shadow-sm">Stephen</span>
+                      <span className="serif text-xl md:text-3xl text-[#c7a77b] italic font-light">&amp;</span>
+                      <span className="script text-[40px] md:text-[56px] text-[#5c5042] leading-[0.9] drop-shadow-sm">Krishani</span>
                     </div>
 
-                    {/* logo */}
-                    <motion.div
-                      animate={{ scale: [1, 1.04, 1] }}
-                      transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                      className="-mb-6 sm:-mb-2 md:mb-0"
-                    >
-                      <img src="/images/logo.png" alt="Z&H Logo" className="w-28 h-28 sm:w-36 sm:h-36 md:w-48 md:h-48 object-contain drop-shadow-md" />
-                    </motion.div>
-
-                    {/* hosting families */}
-                    <div className="space-y-0.5">
-                      <p className="serif text-[9px] sm:text-[10px] md:text-[13px] uppercase tracking-[0.3em] text-umber font-normal leading-relaxed">
-                        MR. &amp; MRS. ZAKEER
-                      </p>
-                      <p className="text-[7px] sm:text-[8px] md:text-[9px] uppercase tracking-[0.25em] text-taupe font-medium">
-                        TOGETHER WITH
-                      </p>
-                      <p className="serif text-[9px] sm:text-[10px] md:text-[13px] uppercase tracking-[0.3em] text-umber font-normal leading-relaxed">
-                        MR. &amp; MRS. ZAFIR ISMAIL
-                      </p>
-                    </div>
-
-                    <p className="serif mb-2.5 sm:mb-0 text-[10px] sm:text-[11px] md:text-[14px] uppercase tracking-[0.2em] text-taupe/80 font-normal leading-relaxed max-w-[200px] md:max-w-xs">
-                      REQUEST THE PLEASURE OF YOUR COMPANY TO CELEBRATE THE MARRIAGE OF THEIR CHILDREN
+                    <p className="serif text-[9px] md:text-xs tracking-[0.2em] text-[#8c7b64] uppercase max-w-[180px] md:max-w-xs mb-8 leading-relaxed font-medium">
+                      Invite you to share in the celebration of their marriage
                     </p>
 
-                    {/* couple names */}
-                    <div className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-4 max-w-full px-2">
-                      <span className="script text-[26px] sm:text-[32px] md:text-[48px] text-sage drop-shadow-sm leading-[1.1]">
-                        Zerlin
-                      </span>
-                      <span className="text-taupe/50 text-sm md:text-xl font-serif">&amp;</span>
-                      <span className="script text-[26px] sm:text-[32px] md:text-[48px] text-sage drop-shadow-sm leading-[1.1]">
-                        Hashimi
-                      </span>
-                    </div>
-
-                    {/* date / time / venue */}
-                    <div className="flex items-center gap-2 sm:gap-3 text-umber/70 w-full mt-1">
-                      <div className="h-px flex-1 bg-sand/45" />
-                      <div className="flex flex-col items-center gap-0.5">
-                        <span className="serif text-[22px] sm:text-[28px] md:text-4xl text-umber font-medium leading-none">
-                          23
-                        </span>
-                        <span className="text-[7px] sm:text-[8px] md:text-[9px] uppercase tracking-[0.3em] text-taupe font-bold">
-                          MAY · SATURDAY
-                        </span>
-                        <span className="text-[7px] sm:text-[8px] md:text-[9px] uppercase tracking-[0.25em] text-taupe font-bold">
-                          7:15 PM · 2026
-                        </span>
-                        <span className="serif mt-1 block max-w-[200px] px-2 text-[10px] sm:text-[11px] md:text-[12px] uppercase tracking-[0.12em] text-umber/75 text-center leading-snug break-words font-medium">
-                          GRAND BALLROOM, WATERS EDGE
-                        </span>
-                      </div>
-                      <div className="h-px flex-1 bg-sand/45" />
-                    </div>
-
-                    {/* bottom ornament */}
-                    <div className="flex items-center gap-3 w-full max-w-[240px]">
-                      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-taupe/55" />
-                      <svg viewBox="0 0 16 16" className="w-3 h-3 opacity-40 text-sage" fill="currentColor">
-                        <path d="M8 0 L9.5 6.5 L16 8 L9.5 9.5 L8 16 L6.5 9.5 L0 8 L6.5 6.5 Z" />
-                      </svg>
-                      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-taupe/55" />
+                    {/* Interlocking Rings SVG */}
+                    <div className="flex items-center justify-center">
+                       <svg width="48" height="32" viewBox="0 0 48 32" className="drop-shadow-md">
+                          <circle cx="18" cy="16" r="10" stroke="#d4b882" strokeWidth="2.5" fill="none" />
+                          <circle cx="30" cy="16" r="10" stroke="#ebd6a5" strokeWidth="2.5" fill="none" />
+                       </svg>
                     </div>
                   </div>
                 </div>
               </motion.div>
 
               {/* front flaps */}
-              <div className="absolute bottom-0 left-0 right-0 h-[64%] sm:h-[66%] md:h-[68%] z-30 rounded-b-[2.5rem] overflow-hidden pointer-events-none">
+              <div className="hidden absolute bottom-0 left-0 right-0 h-[64%] sm:h-[66%] md:h-[68%] z-30 rounded-b-[1.5rem] overflow-hidden pointer-events-none shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
                 <div
-                  className="absolute inset-0 bg-gradient-to-br from-umber via-rust/85 to-sienna/80"
-                  style={{
-                    clipPath: "polygon(0 0, 50% 55%, 0 100%)",
-                  }}
+                  className="absolute inset-0 bg-gradient-to-br from-[#f8eecf] to-[#e4cfa2]"
+                  style={{ clipPath: "polygon(0 0, 50% 55%, 0 100%)" }}
                 >
-                  <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/6 to-transparent" />
+                  <div className="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
                 </div>
-
+                
                 <div
-                  className="absolute inset-0 bg-gradient-to-bl from-umber via-rust/85 to-sienna/80"
-                  style={{
-                    clipPath: "polygon(100% 0, 50% 55%, 100% 100%)",
-                  }}
+                  className="absolute inset-0 bg-gradient-to-bl from-[#f8eecf] to-[#e4cfa2]"
+                  style={{ clipPath: "polygon(100% 0, 50% 55%, 100% 100%)" }}
                 >
-                  <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
-                  <div className="absolute inset-0 bg-gradient-to-bl from-white/6 to-transparent" />
+                  <div className="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
+                  <div className="absolute inset-0 bg-gradient-to-bl from-white/20 to-transparent" />
                 </div>
-
-                <div
-                  className="absolute inset-0 bg-umber/25"
-                  style={{
-                    clipPath: "polygon(45% 50%, 50% 55%, 55% 50%, 50% 48%)",
-                  }}
-                />
-
-                <div className="absolute top-0 left-0 right-0 h-7 bg-gradient-to-b from-umber/25 to-transparent" />
+                
+                <div className="absolute inset-0 bg-black/5" style={{ clipPath: "polygon(49% 50%, 50% 51%, 51% 50%, 50% 49%)" }} />
               </div>
+
+              {/* Music Seal Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMuted((m) => !m);
+                }}
+                className="absolute bottom-24 right-6 md:bottom-10 md:right-10 z-[70] w-20 h-20 md:w-32 md:h-32 rounded-full bg-[#1a1a1a] shadow-2xl flex items-center justify-center border-[3px] border-[#333] group hover:scale-105 transition-transform"
+              >
+                {/* Vinyl record grooves */}
+                <div className="absolute inset-1 rounded-full border border-white/10" />
+                <div className="absolute inset-2.5 rounded-full border border-white/5" />
+                <div className="absolute inset-4 rounded-full border border-white/10" />
+                <div className="absolute inset-5.5 rounded-full border border-white/5" />
+                
+                <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full animate-[spin_10s_linear_infinite]">
+                  <path id="curve" d="M 15,50 A 35,35 0 1,1 85,50 A 35,35 0 1,1 15,50" fill="transparent" />
+                  <text className="text-[10px] md:text-[11px] fill-[#e4cfa2] font-serif tracking-[0.15em] uppercase font-bold">
+                    <textPath href="#curve" startOffset="50%" textAnchor="middle">
+                      Click to play music
+                    </textPath>
+                  </text>
+                </svg>
+
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#d4b882] flex items-center justify-center z-10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] border border-[#ebd6a5]/50">
+                  {isMuted ? (
+                    <svg className="w-4 h-4 md:w-5 md:h-5 text-[#2a2a2a] ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                  ) : (
+                    <svg className="w-4 h-4 md:w-5 md:h-5 text-[#2a2a2a]" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
+                  )}
+                </div>
+              </button>
+              {/* Full Envelope Frame Overlay */}
+              <img src="/o.png" alt="Envelope Frame" className="absolute inset-0 w-full h-full object-fill opacity-90 pointer-events-none z-[60] scale-[1.25] md:scale-100" />
             </motion.div>
+          )}
+
+          {isOpened && (
+             <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 2 }}
+                className="mt-12 mb-8 text-center flex flex-col items-center z-20"
+             >
+                <p className="serif text-xs md:text-sm text-umber/70 tracking-[0.25em] uppercase font-semibold mb-2">
+                  Counting days until
+                </p>
+                <p className="serif italic text-2xl md:text-3xl text-umber/80 tracking-widest font-light">
+                  we say "I Do"
+                </p>
+                <Countdown />
+             </motion.div>
           )}
         </div>
 
-        {/* Bento Grid Layout - Flipped Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-10 relative">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="w-full h-full col-span-2 lg:col-span-2"
+        {/* Event Details Section - Matching Provided UI */}
+        <div className="w-full flex flex-col items-center mt-12 mb-10 relative z-20 text-center">
+          {/* Venue image */}
+          <motion.div 
+             initial={{ opacity: 0, y: 30 }}
+             whileInView={{ opacity: 1, y: 0 }}
+             viewport={{ once: true }}
+             className="mb-10 w-full max-w-lg md:max-w-2xl px-6"
           >
-            <div className="w-full h-[220px] md:h-[350px] lg:h-[350px] relative overflow-hidden rounded-[2rem] shadow-2xl border border-white/40 ring-1 ring-black/5">
-              <div className="w-full h-full bg-[#F5EFE0] p-2 md:p-8 flex flex-col items-center justify-center text-center space-y-2 md:space-y-4 relative group">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-40 pointer-events-none" />
-                <div className="relative z-10 space-y-2 md:space-y-8 scale-[0.9] md:scale-100">
-                  <div className="space-y-1">
-                    <span className="serif italic text-[14px] md:text-2xl text-sage/70">Our Wedding Date</span>
-                    <div className="w-full h-px bg-sage/20" />
-                  </div>
+             <img 
+               src="https://lakpura.com/cdn/shop/files/LK1500D2C9-01-E.jpg?v=1692087200" 
+               alt="The Grand Hotel Nuwara Eliya" 
+               className="w-full h-auto object-cover opacity-95 shadow-2xl rounded-2xl md:rounded-[2rem] border-4 border-white/40" 
+             />
+          </motion.div>
 
-                  <div className="flex flex-col items-center">
-                    <p className="text-[8px] md:text-xs uppercase tracking-[0.4em] text-zinc-400 font-black mb-1 md:mb-2">Saturday</p>
-                    <div className="relative inline-block px-6 md:px-8 py-1 md:py-2 border-y border-sage/30">
-                      <p className="serif text-5xl md:text-8xl font-medium text-sage leading-none">23</p>
-                      <motion.div
-                        animate={{ opacity: [0.4, 1, 0.4] }}
-                        transition={{ repeat: Infinity, duration: 2 }}
-                        className="absolute -top-1 -right-1 text-[#A84C2C]"
-                      >
-                        <Sparkles size={12} className="md:w-4 md:h-4" />
-                      </motion.div>
-                    </div>
-                    <p className="serif text-sm md:text-2xl font-light tracking-[0.2em] mt-2 md:mt-3">MAY</p>
-                  </div>
+          <motion.h2 
+             initial={{ opacity: 0 }}
+             whileInView={{ opacity: 1 }}
+             viewport={{ once: true }}
+             className="script text-[50px] md:text-[70px] text-zinc-700 drop-shadow-sm mb-6"
+          >
+            Ceremony & Reception
+          </motion.h2>
+          
+          <motion.div 
+             initial={{ opacity: 0, y: 20 }}
+             whileInView={{ opacity: 1, y: 0 }}
+             viewport={{ once: true }}
+             className="flex flex-col items-center w-full max-w-sm mx-auto mb-12 relative px-4"
+          >
+            <div className="w-full py-8 md:py-10 flex flex-col items-center bg-[#faf8f5]/80 backdrop-blur-md border border-[#e4cfa2]/40 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden">
+               <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-transparent pointer-events-none" />
+               
+               <div className="flex flex-col items-center space-y-6 md:space-y-8 z-10 w-full px-6">
+                 
+                 <div className="flex flex-col items-center text-center">
+                   <p className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] text-[#8c7b64] font-semibold mb-2">When</p>
+                   <p className="serif italic text-xl md:text-2xl text-[#5c5042]">Saturday</p>
+                   <p className="serif text-xs md:text-sm text-[#5c5042] tracking-widest uppercase mt-2">December 5th, 2026</p>
+                 </div>
 
-                  <div className="pt-1">
-                    <p className="text-[7px] md:text-xs uppercase tracking-[0.4em] md:tracking-[0.5em] font-black text-sage/40">
-                      Twenty Twenty Six
-                    </p>
-                  </div>
-                </div>
+                 <div className="w-16 h-[1px] bg-[#d4b882]/30" />
 
-                <div className="absolute bottom-0 left-0 right-0 h-4 bg-paper clip-path-[polygon(0%_100%,_5%_80%,_10%_100%,_15%_80%,_20%_100%,_25%_80%,_30%_100%,_35%_80%,_40%_100%,_45%_80%,_50%_100%,_55%_80%,_60%_100%,_65%_80%,_70%_100%,_75%_80%,_80%_100%,_85%_80%,_90%_100%,_95%_80%,_100%_100%)] opacity-50" />
-              </div>
+                 <div className="flex flex-col items-center text-center">
+                   <p className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] text-[#8c7b64] font-semibold mb-2">Time</p>
+                   <p className="serif italic text-xl md:text-2xl text-[#5c5042]">Begins at 11:00 AM</p>
+                 </div>
+
+                 <div className="w-16 h-[1px] bg-[#d4b882]/30" />
+
+                 <div className="flex flex-col items-center text-center">
+                   <p className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] text-[#8c7b64] font-semibold mb-2">Where</p>
+                   <p className="serif text-lg md:text-xl text-[#5c5042] tracking-widest uppercase">The Grand Hotel</p>
+                   <p className="serif italic text-sm md:text-base text-[#5c5042]/80 mt-1">Nuwara Eliya</p>
+                 </div>
+                 
+               </div>
             </div>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="w-full h-full col-span-2 lg:col-span-2"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => window.open("https://maps.app.goo.gl/ZnnLSGLFKRhb4U7N6", "_blank")}
+            className="flex items-center gap-4 cursor-pointer mb-16"
           >
-            <FlipCard
-              containerClassName="w-full h-[380px] md:h-[350px] lg:h-[350px]"
-              front={
-                <div className="w-full h-full bg-[#F5EFE0] p-6 flex flex-col justify-center items-center text-center relative group overflow-hidden">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-sage/10 rounded-full blur-3xl pointer-events-none" />
-                  <div className="relative z-10 space-y-3 md:space-y-6">
-                    <div className="flex flex-col items-center gap-1">
-                      <p className="serif italic text-lg md:text-2xl text-umber group-hover:scale-110 transition-transform">Kindly</p>
-                      <h3 className="serif text-2xl md:text-4xl tracking-[0.3em] font-medium text-umber">RSVP</h3>
-                    </div>
-                    <motion.div
-                      animate={{ scale: [1, 1.05, 1] }}
-                      transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                      className="group-hover:scale-110 transition-transform duration-500"
-                    >
-                      <img src="/images/logo.png" alt="Z&H Logo" className="w-[45vw] h-[45vw] sm:w-[220px] sm:h-[220px] md:w-[280px] md:h-[280px] object-contain drop-shadow-xl" />
-                    </motion.div>
-                    <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-zinc-400 font-bold mt-1">by 04.05.2026</p>
-                  </div>
-                </div>
-              }
-              back={
-                <RSVPForm />
-              }
-            />
+             <div className="text-[50px] md:text-[60px] drop-shadow-lg -mt-2">📍</div>
+             <p className="serif uppercase tracking-widest text-[10px] md:text-xs max-w-[200px] text-zinc-700 leading-loose text-left font-semibold">
+               Click the map to<br/>get the direction<br/>of the venue
+             </p>
           </motion.div>
 
 
-
+          
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="w-full h-full col-span-2 lg:col-span-2"
+             initial={{ opacity: 0 }}
+             whileInView={{ opacity: 1 }}
+             viewport={{ once: true }}
+             className="w-full max-w-md mx-auto"
           >
-            <FlipCard
-              containerClassName="w-full h-[300px] md:h-[350px] lg:h-[350px]"
-              front={
-                <div className="w-full h-full relative group">
-                  <img
-                    src="https://www.watersedge.lk/wp-content/uploads/2026/01/004A2024-1024x1536.jpg"
-                    alt="Waters Edge Grand Ballroom"
-                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500" />
-                  <div className="absolute top-6 right-6 md:top-10 md:right-10 bg-white/60 backdrop-blur-md p-4 md:p-8 border border-white/60 rounded-2xl group-hover:bg-white/80 transition-all duration-700 shadow-xl">
-                    <p className="serif text-[8px] md:text-xs uppercase tracking-[0.4em] text-sage/80 mb-2 flex items-center gap-2">
-                      <span className="w-4 h-px bg-sage/30" />
-                      The Location
-                    </p>
-                    <h3 className="serif text-2xl md:text-5xl text-sage leading-tight drop-shadow-sm font-medium">
-                      Waters Edge
-                      <br />
-                      Grand Ballroom
-                    </h3>
-
-                    <motion.button
-                      data-no-flip
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => window.open("https://maps.app.goo.gl/3EQ7xzj3EX9T2xEx6", "_blank")}
-                      className="mt-3 md:mt-5 px-5 py-2 md:px-7 md:py-3 bg-sage text-white rounded-full text-[9px] md:text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition-colors"
-                    >
-                      View Map
-                    </motion.button>
-                  </div>
-
-                  <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10 text-sage flex items-center gap-3 bg-white/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/60 shadow-lg">
-                    <MapPin className="text-sage animate-bounce" size={16} />
-                    <p className="serif text-[10px] md:text-sm tracking-[0.2em] font-bold uppercase">Waters Edge</p>
-                  </div>
-                </div>
-              }
-              back={
-                <>
-                  <MapPin size={24} className="text-sage mb-4 md:mb-6 opacity-70 md:w-9 md:h-9" />
-                  <h4 className="serif text-2xl md:text-4xl text-sage mb-2 md:mb-4">Waters Edge Grand Ballroom</h4>
-                  <p className="text-[10px] md:text-sm text-zinc-500 uppercase tracking-widest leading-loose mb-4 md:mb-6">
-                    Waters Edge
-                    <br />
-                    Grand Ballroom
-                  </p>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => window.open("https://maps.app.goo.gl/3EQ7xzj3EX9T2xEx6", "_blank")}
-                    className="px-6 py-2 md:px-8 md:py-3 bg-sage text-white rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition-colors"
-                  >
-                    View Map
-                  </motion.button>
-                </>
-              }
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="w-full h-full col-span-2 lg:col-span-2"
-          >
-            <FlipCard
-              containerClassName="w-full h-[300px] md:h-[350px] lg:h-[350px]"
-              front={
-                <div className="w-full h-full relative group overflow-hidden">
-                  <img
-                    src="/time.png"
-                    alt="Timeline"
-                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
-
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center z-20">
-                    <motion.div initial={{ scale: 0.8, opacity: 0 }} whileHover={{ scale: 1, opacity: 1 }} className="bg-white/10 backdrop-blur-lg p-6 rounded-full border border-white/20">
-                      <Clock size={32} className="text-white" />
-                    </motion.div>
-                    <p className="serif text-white text-3xl md:text-5xl italic tracking-widest mt-6 drop-shadow-lg">Event Timeline</p>
-                    <div className="mt-4 flex gap-2">
-                      {[1, 2, 3].map((i) => (
-                        <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/50" />
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="absolute top-0 bottom-0 left-4 w-px bg-white/20" />
-                  <div className="absolute top-0 bottom-0 left-6 w-px bg-white/10" />
-                  <div className="absolute top-0 bottom-0 right-4 w-px bg-white/20" />
-                  <div className="absolute top-0 bottom-0 right-6 w-px bg-white/10" />
-                </div>
-              }
-              back={
-                <div className="w-full h-full flex flex-col justify-center items-center px-4 md:px-8">
-                  <Clock size={24} className="text-sage mb-4 md:mb-6 opacity-70 md:w-8 md:h-8" />
-                  <h4 className="serif text-2xl md:text-3xl text-sage mb-4 md:mb-8">Timeline</h4>
-
-                  <div className="w-full max-w-sm space-y-4 md:space-y-6 text-left">
-                    <div className="flex items-start gap-2 md:gap-4">
-                      <span className="serif text-sage font-bold text-[10px] md:text-base w-12 md:w-20 text-right shrink-0 pt-1">7:45 PM</span>
-                      <div className="w-px h-full bg-sage/30 relative mt-2 -ml-[1px] md:-ml-2 shrink-0">
-                        <div className="absolute top-0 -left-[3px] w-2 h-2 rounded-full bg-sage" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] md:text-xs font-bold uppercase tracking-wider">Nikkah Ceremony</p>
-                        <p className="serif text-[10px] md:text-xs italic text-zinc-500">Followed by Dinner</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              }
-            />
+            <RSVPForm />
           </motion.div>
         </div>
 
