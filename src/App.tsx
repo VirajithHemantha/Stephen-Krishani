@@ -582,11 +582,11 @@ export default function App() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
-              className="flex flex-col items-center z-10 w-full mb-10 md:mb-12 pointer-events-none mt-4 md:mt-0"
+              className="flex flex-col items-center z-10 w-full mb-10 md:mb-12 pointer-events-none mt-24 md:mt-8"
             >
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-12 md:w-20 h-[1px] bg-[#d4b882]/60" />
-                <h2 className="serif text-[10px] md:text-xs text-[#8c7b64] tracking-[0.4em] uppercase font-bold">
+                <h2 className="serif text-xs md:text-sm text-[#8c7b64] tracking-[0.4em] uppercase font-bold">
                   You are invited
                 </h2>
                 <div className="w-12 md:w-20 h-[1px] bg-[#d4b882]/60" />
