@@ -186,8 +186,8 @@ function RealisticPetal({ size = 20, className = "" }: { size?: number; classNam
       <svg width="100%" height="100%" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <radialGradient id="petalGrad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#C4714A" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#9C8470" stopOpacity="0.65" />
+            <stop offset="0%" stopColor="#B5955C" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#8B7345" stopOpacity="0.65" />
           </radialGradient>
         </defs>
         <path
@@ -240,11 +240,11 @@ function Countdown() {
         { label: "Seconds", value: timeLeft.seconds },
       ].map((item, idx) => (
         <div key={idx} className="flex flex-col items-center">
-          <div className="w-14 h-16 md:w-20 md:h-24 bg-[#faf8f5] rounded-xl md:rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-[#e4cfa2]/30 flex items-center justify-center relative overflow-hidden">
+          <div className="w-14 h-16 md:w-20 md:h-24 bg-[#ffffff] rounded-xl md:rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-[#D4C19C]/30 flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-b from-white/60 to-transparent pointer-events-none" />
-            <span className="serif text-2xl md:text-4xl text-[#5c5042] font-medium z-10">{item.value.toString().padStart(2, '0')}</span>
+            <span className="serif text-2xl md:text-4xl text-[#332A19] font-medium z-10">{item.value.toString().padStart(2, '0')}</span>
           </div>
-          <span className="text-[9px] md:text-xs uppercase tracking-[0.2em] text-[#8c7b64] font-semibold mt-3 md:mt-4">
+          <span className="text-[9px] md:text-xs uppercase tracking-[0.2em] text-[#8B7345] font-semibold mt-3 md:mt-4">
             {item.label}
           </span>
         </div>
@@ -486,6 +486,7 @@ function RSVPForm() {
 export default function App() {
   const [isFlapOpen, setIsFlapOpen] = useState(false);
   const [isOpened, setIsOpened] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -531,11 +532,9 @@ export default function App() {
   const reduceEffects = prefersReducedMotion || isIOS;
 
   const handleOpen = () => {
-    setIsFlapOpen(true);
-    setTimeout(() => {
-      setIsOpened(true);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 1200);
+    setIsOpened(true);
+    setIsMuted(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -568,68 +567,63 @@ export default function App() {
 
 
       <AnimatePresence>
-        {!isOpened && (
+        {!isOpened && !showVideo && (
           <motion.div
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.8, delay: 0.5 } }}
-            className="fixed inset-0 z-[100] bg-[#efe7db] flex flex-col items-center justify-center px-4 py-8 overflow-hidden"
+            exit={{ opacity: 0, transition: { duration: 0.8 } }}
+            className="fixed inset-0 z-[110] bg-[#ffffff] flex flex-col items-center justify-center overflow-hidden"
           >
-            {/* Background Texture for Premium Feel */}
-            <div className="absolute inset-0 opacity-[0.35] bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] pointer-events-none" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#fff8ee]/70 via-transparent to-[#d4b882]/20 pointer-events-none" />
+             <div className="absolute inset-0 opacity-[0.25] bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] pointer-events-none" />
+             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#ffffff]/60 via-transparent to-transparent pointer-events-none" />
 
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
-              className="flex flex-col items-center z-10 w-full mb-10 md:mb-12 pointer-events-none mt-24 md:mt-8"
-            >
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 md:w-20 h-[1px] bg-[#d4b882]/60" />
-                <h2 className="serif text-xs md:text-sm text-[#8c7b64] tracking-[0.4em] uppercase font-bold">
-                  You are invited
-                </h2>
-                <div className="w-12 md:w-20 h-[1px] bg-[#d4b882]/60" />
-              </div>
+             <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ duration: 1.2, delay: 0.2 }}
+               className="flex flex-col items-center z-10 px-4"
+             >
+                <img src="/images/logo.png" alt="Z&H Logo" className="w-20 h-20 md:w-28 md:h-28 object-contain mb-8 opacity-90" />
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 md:w-20 h-[1px] bg-[#B5955C]/60" />
+                  <h2 className="serif text-xs md:text-sm text-[#8B7345] tracking-[0.4em] uppercase font-bold">
+                    You are invited
+                  </h2>
+                  <div className="w-12 md:w-20 h-[1px] bg-[#B5955C]/60" />
+                </div>
 
-              <h1 className="script text-[40px] sm:text-[55px] md:text-[80px] text-[#5c5042] mb-6 drop-shadow-sm leading-[1.1] text-center px-2 whitespace-nowrap">
-                Stephen & Krishani
-              </h1>
-              
-              <div className="flex items-center gap-6 md:gap-8 mt-2">
-                 <p className="serif text-base md:text-xl text-[#8c7b64] tracking-[0.4em] font-light uppercase">
-                   05
-                 </p>
-                 <div className="w-1.5 h-1.5 md:w-2 md:h-2 rotate-45 border border-[#d4b882] bg-transparent opacity-80" />
-                 <p className="serif text-base md:text-xl text-[#8c7b64] tracking-[0.4em] font-light uppercase">
-                   12
-                 </p>
-                 <div className="w-1.5 h-1.5 md:w-2 md:h-2 rotate-45 border border-[#d4b882] bg-transparent opacity-80" />
-                 <p className="serif text-base md:text-xl text-[#8c7b64] tracking-[0.4em] font-light uppercase">
-                   2026
-                 </p>
-              </div>
-            </motion.div>
+                <h1 className="script text-[50px] sm:text-[70px] md:text-[90px] text-[#332A19] mb-12 drop-shadow-sm text-center leading-[1.1]">
+                  Stephen & Krishani
+                </h1>
+                
+                <button
+                  onClick={() => {
+                    setShowVideo(true);
+                    setIsMuted(false);
+                  }}
+                  className="px-10 py-4 bg-[#ffffff] border border-[#B5955C]/40 text-[#332A19] rounded-full uppercase tracking-[0.2em] text-xs font-bold hover:bg-[#f5f5f5] hover:scale-105 transition-all duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
+                >
+                  View Invitation
+                </button>
+             </motion.div>
+          </motion.div>
+        )}
 
-            <motion.div
-              animate={!reduceEffects && !isFlapOpen ? { y: [0, -10, 0] } : {}}
-              transition={!reduceEffects ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { duration: 0 }}
-              className="relative w-full max-w-sm md:max-w-lg z-10 flex flex-col items-center cursor-pointer group px-4"
-              onClick={handleOpen}
-            >
-              <motion.img 
-                src="/envi.png" 
-                alt="Envelope" 
-                className="w-full h-auto drop-shadow-2xl transition-transform duration-700 group-hover:scale-105"
-              />
-              
-              <div className="mt-12 text-center flex flex-col items-center gap-3 opacity-80 group-hover:opacity-100 transition-opacity duration-500">
-                <div className="w-px h-8 bg-gradient-to-b from-[#d4b882] to-transparent animate-pulse" />
-                <p className="serif text-[9px] md:text-xs text-[#8c7b64] tracking-[0.3em] uppercase font-bold">
-                  Tap to open
-                </p>
-              </div>
-            </motion.div>
+        {!isOpened && showVideo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 0.8 } }}
+            exit={{ opacity: 0, transition: { duration: 0.8, delay: 0.2 } }}
+            className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center overflow-hidden cursor-pointer"
+            onClick={handleOpen}
+          >
+            <video
+              src="/intro-video.mp4"
+              autoPlay
+              muted
+              playsInline
+              onEnded={handleOpen}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -646,112 +640,58 @@ export default function App() {
         className="max-w-[1600px] mx-auto px-4 py-10 sm:py-12 md:px-12 md:py-24 flex flex-col gap-10 md:gap-16 relative z-10 min-h-screen"
       >
 
-        {/* Updated premium envelope section */}
-        <div className="flex flex-col items-center justify-center w-full mb-8 mt-24 md:mt-48 relative">
+        {/* Hero Invitation Section */}
+        <div className="flex flex-col items-center justify-center w-full mb-12 mt-16 md:mt-24 relative px-4">
           {!isOpened ? (
             <div className="w-full max-w-3xl relative h-[340px] sm:h-[380px] md:h-[460px]" />
           ) : (
             <motion.div
-              layoutId="envelope-box"
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
-              className="w-full max-w-2xl relative cursor-default"
-              style={{
-                height: isSmallScreen ? "550px" : "clamp(450px, 55vw, 680px)",
-              }}
+              className="w-full max-w-xl md:max-w-2xl relative"
             >
-              {/* envelope body back - cream/gold */}
-              <div className="hidden absolute bottom-0 left-0 right-0 h-[64%] sm:h-[66%] md:h-[68%] rounded-b-[1.5rem] overflow-hidden z-10 shadow-[0_24px_70px_-12px_rgba(200,180,140,0.45)]">
-                <div className="absolute inset-0 bg-gradient-to-b from-[#f8eecf] to-[#e4cfa2]" />
-                <div className="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
-              </div>
+              <div className="relative bg-[#ffffff] rounded-t-full rounded-b-3xl md:rounded-t-[240px] md:rounded-b-[40px] shadow-2xl border-4 border-[#D4C19C]/40 overflow-hidden min-h-[550px] md:min-h-[650px] flex flex-col items-center pt-20 md:pt-28 pb-16 px-6 md:px-12">
+                {/* Background texture */}
+                <div className="absolute inset-0 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] pointer-events-none" />
 
-              {/* opened flap - back */}
-              <div
-                className="hidden absolute left-0 right-0 z-10 pointer-events-none overflow-hidden"
-                style={{
-                  bottom: isSmallScreen ? "63%" : "67%",
-                  height: isSmallScreen ? "33%" : "40%",
-                }}
-              >
-                <div
-                  className="absolute inset-0 bg-gradient-to-t from-[#e4cfa2] to-[#f8eecf]"
-                  style={{ clipPath: "polygon(0 100%, 50% 0, 100% 100%)" }}
-                >
-                  <div className="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
+                {/* Top curved text approximation */}
+                <div className="absolute top-10 w-full flex justify-center pointer-events-none">
+                   <p className="serif text-[9px] md:text-[11px] tracking-[0.25em] text-[#8B7345] uppercase opacity-70 font-semibold">
+                     Together with their families
+                   </p>
                 </div>
-              </div>
-
-              {/* invitation card - Arch shape */}
-              <motion.div
-                initial={{ y: 120, opacity: 0 }}
-                animate={{ y: isSmallScreen ? -20 : -30, opacity: 1 }}
-                transition={{ duration: 1.4, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute left-6 right-6 sm:left-12 sm:right-12 md:left-20 md:right-20 z-20"
-                style={{ bottom: "25%", top: "auto" }}
-              >
-                <div className="relative bg-[#faf8f5] rounded-[100px] md:rounded-[160px] shadow-xl border-4 border-[#e4cfa2]/40 overflow-hidden min-h-[480px] md:min-h-[580px] flex flex-col items-center pt-8 md:pt-14 pb-14 px-4">
-                  {/* Background texture */}
-                  <div className="absolute inset-0 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] pointer-events-none" />
-
-                  {/* Top curved text approximation */}
-                  <div className="absolute top-4 w-full flex justify-center pointer-events-none">
-                     <p className="serif text-[8px] md:text-[10px] tracking-[0.2em] text-[#8c7b64] uppercase opacity-70">
-                       Together with their families
-                     </p>
-                  </div>
+                
+                <div className="flex flex-col items-center text-center w-full z-10 mt-6">
+                  <img src="/images/logo.png" alt="Z&H Logo" className="w-20 h-20 md:w-28 md:h-28 object-contain mb-8 opacity-90" />
                   
-                  <div className="flex flex-col items-center text-center w-full z-10 mt-6">
-                    <img src="/images/logo.png" alt="Z&H Logo" className="w-16 h-16 md:w-24 md:h-24 object-contain mb-6 opacity-90" />
-                    
-                    <div className="flex flex-col items-center gap-1 md:gap-2 mb-8">
-                      <span className="script text-[40px] md:text-[56px] text-[#5c5042] leading-[0.9] drop-shadow-sm">Stephen</span>
-                      <span className="serif text-xl md:text-3xl text-[#c7a77b] italic font-light">&amp;</span>
-                      <span className="script text-[40px] md:text-[56px] text-[#5c5042] leading-[0.9] drop-shadow-sm">Krishani</span>
-                    </div>
+                  <div className="flex flex-col items-center gap-2 md:gap-4 mb-10">
+                    <span className="script text-[50px] md:text-[76px] text-[#332A19] leading-[0.9] drop-shadow-sm">Stephen</span>
+                    <span className="serif text-xl md:text-3xl text-[#B5955C] italic font-light">&amp;</span>
+                    <span className="script text-[50px] md:text-[76px] text-[#332A19] leading-[0.9] drop-shadow-sm">Krishani</span>
+                  </div>
 
-                    <p className="serif text-[9px] md:text-xs tracking-[0.2em] text-[#8c7b64] uppercase max-w-[180px] md:max-w-xs mb-8 leading-relaxed font-medium">
-                      Invite you to share in the celebration of their marriage
-                    </p>
+                  <p className="serif text-[10px] md:text-xs tracking-[0.2em] text-[#8B7345] uppercase max-w-[220px] md:max-w-sm mb-12 leading-relaxed font-medium">
+                    Invite you to share in the celebration of their marriage
+                  </p>
 
-                    {/* Interlocking Rings SVG */}
-                    <div className="flex items-center justify-center">
-                       <svg width="48" height="32" viewBox="0 0 48 32" className="drop-shadow-md">
-                          <circle cx="18" cy="16" r="10" stroke="#d4b882" strokeWidth="2.5" fill="none" />
-                          <circle cx="30" cy="16" r="10" stroke="#ebd6a5" strokeWidth="2.5" fill="none" />
-                       </svg>
-                    </div>
+                  {/* Interlocking Rings SVG */}
+                  <div className="flex items-center justify-center">
+                     <svg width="64" height="42" viewBox="0 0 48 32" className="drop-shadow-md opacity-80">
+                        <circle cx="18" cy="16" r="10" stroke="#B5955C" strokeWidth="2.5" fill="none" />
+                        <circle cx="30" cy="16" r="10" stroke="#E5D3B3" strokeWidth="2.5" fill="none" />
+                     </svg>
                   </div>
                 </div>
-              </motion.div>
-
-              {/* front flaps */}
-              <div className="hidden absolute bottom-0 left-0 right-0 h-[64%] sm:h-[66%] md:h-[68%] z-30 rounded-b-[1.5rem] overflow-hidden pointer-events-none shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
-                <div
-                  className="absolute inset-0 bg-gradient-to-br from-[#f8eecf] to-[#e4cfa2]"
-                  style={{ clipPath: "polygon(0 0, 50% 55%, 0 100%)" }}
-                >
-                  <div className="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
-                </div>
-                
-                <div
-                  className="absolute inset-0 bg-gradient-to-bl from-[#f8eecf] to-[#e4cfa2]"
-                  style={{ clipPath: "polygon(100% 0, 50% 55%, 100% 100%)" }}
-                >
-                  <div className="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
-                  <div className="absolute inset-0 bg-gradient-to-bl from-white/20 to-transparent" />
-                </div>
-                
-                <div className="absolute inset-0 bg-black/5" style={{ clipPath: "polygon(49% 50%, 50% 51%, 51% 50%, 50% 49%)" }} />
               </div>
 
-              {/* Music Seal Button */}
+              {/* Music Seal Button - Repositioned for Hero section */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsMuted((m) => !m);
                 }}
-                className="absolute bottom-24 right-6 md:bottom-10 md:right-10 z-[70] w-20 h-20 md:w-32 md:h-32 rounded-full bg-[#1a1a1a] shadow-2xl flex items-center justify-center border-[3px] border-[#333] group hover:scale-105 transition-transform"
+                className="absolute -bottom-6 -right-2 md:-bottom-10 md:-right-6 z-[70] w-24 h-24 md:w-32 md:h-32 rounded-full bg-[#B5955C] shadow-2xl flex items-center justify-center border-[3px] border-[#8B7345] group hover:scale-105 transition-transform"
               >
                 {/* Vinyl record grooves */}
                 <div className="absolute inset-1 rounded-full border border-white/10" />
@@ -761,23 +701,21 @@ export default function App() {
                 
                 <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full animate-[spin_10s_linear_infinite]">
                   <path id="curve" d="M 15,50 A 35,35 0 1,1 85,50 A 35,35 0 1,1 15,50" fill="transparent" />
-                  <text className="text-[10px] md:text-[11px] fill-[#e4cfa2] font-serif tracking-[0.15em] uppercase font-bold">
+                  <text className="text-[10px] md:text-[11px] fill-[#D4C19C] font-serif tracking-[0.15em] uppercase font-bold">
                     <textPath href="#curve" startOffset="50%" textAnchor="middle">
                       Click to play music
                     </textPath>
                   </text>
                 </svg>
 
-                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#d4b882] flex items-center justify-center z-10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] border border-[#ebd6a5]/50">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#B5955C] flex items-center justify-center z-10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] border border-[#E5D3B3]/50">
                   {isMuted ? (
-                    <svg className="w-4 h-4 md:w-5 md:h-5 text-[#2a2a2a] ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                    <svg className="w-5 h-5 md:w-6 md:h-6 text-[#332A19] ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                   ) : (
-                    <svg className="w-4 h-4 md:w-5 md:h-5 text-[#2a2a2a]" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
+                    <svg className="w-5 h-5 md:w-6 md:h-6 text-[#332A19]" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
                   )}
                 </div>
               </button>
-              {/* Full Envelope Frame Overlay */}
-              <img src="/o.png" alt="Envelope Frame" className="absolute inset-0 w-full h-full object-fill opacity-90 pointer-events-none z-[60] scale-[1.25] md:scale-100" />
             </motion.div>
           )}
 
@@ -830,30 +768,30 @@ export default function App() {
              viewport={{ once: true }}
              className="flex flex-col items-center w-full max-w-sm mx-auto mb-12 relative px-4"
           >
-            <div className="w-full py-8 md:py-10 flex flex-col items-center bg-[#faf8f5]/80 backdrop-blur-md border border-[#e4cfa2]/40 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden">
+            <div className="w-full py-8 md:py-10 flex flex-col items-center bg-[#ffffff]/80 backdrop-blur-md border border-[#D4C19C]/40 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden">
                <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-transparent pointer-events-none" />
                
                <div className="flex flex-col items-center space-y-6 md:space-y-8 z-10 w-full px-6">
                  
                  <div className="flex flex-col items-center text-center">
-                   <p className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] text-[#8c7b64] font-semibold mb-2">When</p>
-                   <p className="serif italic text-xl md:text-2xl text-[#5c5042]">Saturday</p>
-                   <p className="serif text-xs md:text-sm text-[#5c5042] tracking-widest uppercase mt-2">December 5th, 2026</p>
+                   <p className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] text-[#8B7345] font-semibold mb-2">When</p>
+                   <p className="serif italic text-xl md:text-2xl text-[#332A19]">Saturday</p>
+                   <p className="serif text-xs md:text-sm text-[#332A19] tracking-widest uppercase mt-2">December 5th, 2026</p>
                  </div>
 
-                 <div className="w-16 h-[1px] bg-[#d4b882]/30" />
+                 <div className="w-16 h-[1px] bg-[#B5955C]/30" />
 
                  <div className="flex flex-col items-center text-center">
-                   <p className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] text-[#8c7b64] font-semibold mb-2">Time</p>
-                   <p className="serif italic text-xl md:text-2xl text-[#5c5042]">Begins at 11:00 AM</p>
+                   <p className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] text-[#8B7345] font-semibold mb-2">Time</p>
+                   <p className="serif italic text-xl md:text-2xl text-[#332A19]">Begins at 11:00 AM</p>
                  </div>
 
-                 <div className="w-16 h-[1px] bg-[#d4b882]/30" />
+                 <div className="w-16 h-[1px] bg-[#B5955C]/30" />
 
                  <div className="flex flex-col items-center text-center">
-                   <p className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] text-[#8c7b64] font-semibold mb-2">Where</p>
-                   <p className="serif text-lg md:text-xl text-[#5c5042] tracking-widest uppercase">The Grand Hotel</p>
-                   <p className="serif italic text-sm md:text-base text-[#5c5042]/80 mt-1">Nuwara Eliya</p>
+                   <p className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] text-[#8B7345] font-semibold mb-2">Where</p>
+                   <p className="serif text-lg md:text-xl text-[#332A19] tracking-widest uppercase">The Grand Hotel</p>
+                   <p className="serif italic text-sm md:text-base text-[#332A19]/80 mt-1">Nuwara Eliya</p>
                  </div>
                  
                </div>

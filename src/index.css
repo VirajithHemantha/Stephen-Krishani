@@ -2,14 +2,13 @@
 @import "tailwindcss";
 
 /* =============================================
-   BOHO COLOR PALETTE
-   Ivory    #F5EFE0  — background / paper
-   Sand     #C9B99A  — light neutral accent
-   Taupe    #9C8470  — mid-tone text/borders
-   Terra    #C4714A  — primary accent (replaces sage)
-   Rust     #A84C2C  — deep accent / hover
-   Umber    #6B3D28  — dark rich tones
-   Sienna   #8B4513  — warm earthy accent
+   CHAMPAGNE GOLD COLOR PALETTE
+   White         #FFFFFF  - background
+   Champagne     #E5D3B3  - light neutral accent
+   Dark Gold     #B5955C  - primary accent (replaces sage)
+   Bronze        #8B7345  - mid-tone text/borders
+   Deep Bronze   #5C4D2E  - deep accent / hover
+   Darkest       #332A19  - dark rich tones
    ============================================= */
 
 @theme {
@@ -17,23 +16,23 @@
   --font-script: "Great Vibes", cursive;
   --font-sans: "Inter", sans-serif;
 
-  /* Primary accent — drives all `sage` classes */
-  --color-sage:   #C4714A;   /* Terracotta */
+  /* Primary accent - drives all `sage` classes */
+  --color-sage:   #B5955C;   /* Dark Champagne Gold */
 
-  /* Background — drives all `paper` classes */
-  --color-paper:  #F5EFE0;   /* Ivory */
+  /* Background - drives all `paper` classes */
+  --color-paper:  #FFFFFF;   /* White */
 
-  /* Extended boho palette */
-  --color-sand:   #C9B99A;
-  --color-taupe:  #9C8470;
-  --color-rust:   #A84C2C;
-  --color-umber:  #6B3D28;
-  --color-sienna: #8B4513;
+  /* Extended palette */
+  --color-sand:   #E5D3B3;
+  --color-taupe:  #8B7345;
+  --color-rust:   #5C4D2E;
+  --color-umber:  #332A19;
+  --color-sienna: #B5955C;
 }
 
 body {
   background-color: var(--color-paper);
-  color: #3D2B1F;
+  color: #332A19;
   font-family: var(--font-sans);
 }
 
