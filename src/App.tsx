@@ -263,12 +263,17 @@ type GuestEntry = {
 };
 
 function RSVPForm() {
-  const endpoint = (import.meta as any).env?.VITE_RSVP_ENDPOINT as string | undefined;
+  const searchParams = new URLSearchParams(window.location.search);
+  const prefix = searchParams.get("p") || "";
+  const name = searchParams.get("n") || "";
+  const initialName = [prefix, name].filter(Boolean).join(" ");
+
+  const endpoint = "https://script.google.com/macros/s/AKfycbwA8463K2R96PdTX44MB3liluFOrWLLTwpZ0xEAfBcA2-L8nb8Sco6dWVrG0lM59Pa5pQ/exec";
 
   const [attendance, setAttendance] = useState<Attendance>("yes");
   const [partyType, setPartyType] = useState<PartyType>("individual");
   const [guestCount, setGuestCount] = useState<number>(1);
-  const [guests, setGuests] = useState<GuestEntry[]>([{ name: "", meal: "non-veg" }]);
+  const [guests, setGuests] = useState<GuestEntry[]>([{ name: initialName, meal: "non-veg" }]);
 
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -280,22 +285,14 @@ function RSVPForm() {
   useEffect(() => {
     if (partyType === "individual") {
       setGuestCount(1);
-      setGuests((prev) => [prev[0] ?? { name: "", meal: "non-veg" }]);
+      setGuests((prev) => [prev[0] ?? { name: initialName, meal: "non-veg" }]);
       return;
     }
 
     setGuestCount((c) => (c < 2 ? 2 : c));
   }, [partyType]);
 
-  useEffect(() => {
-    const desiredCount = partyType === "family" ? Math.max(2, guestCount) : 1;
-    setGuests((prev) => {
-      if (prev.length === desiredCount) return prev;
-      const next = prev.slice(0, desiredCount);
-      while (next.length < desiredCount) next.push({ name: "", meal: "non-veg" });
-      return next;
-    });
-  }, [guestCount, partyType]);
+
 
   function updateGuest(index: number, patch: Partial<GuestEntry>) {
     setGuests((prev) => prev.map((g, i) => (i === index ? { ...g, ...patch } : g)));
@@ -338,24 +335,19 @@ function RSVPForm() {
 
     setSubmitting(true);
     try {
-      // Try JSON request first (works if endpoint supports CORS).
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+      const fd = new FormData();
+      fd.append("payload", JSON.stringify(payload));
+      
+      // Google Apps Script requires no-cors for this setup to avoid preflight errors
+      await fetch(endpoint, { 
+        method: "POST", 
+        mode: "no-cors", 
+        body: fd 
       });
-      if (!res.ok) throw new Error(String(res.status));
-      setSuccessMessage("RSVP saved. Thank you!");
+      
+      setSuccessMessage("RSVP submitted. Thank you!");
     } catch {
-      try {
-        // Fallback for Apps Script deployments without CORS.
-        const fd = new FormData();
-        fd.append("payload", JSON.stringify(payload));
-        await fetch(endpoint, { method: "POST", mode: "no-cors", body: fd });
-        setSuccessMessage("RSVP submitted. Thank you!");
-      } catch {
-        setErrorMessage("Could not submit RSVP. Please try again.");
-      }
+      setErrorMessage("Could not submit RSVP. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -417,48 +409,32 @@ function RSVPForm() {
         {isAttending && partyType === "family" && (
           <div className="flex items-center justify-between gap-3">
             <label className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-zinc-600">Family Count</label>
-            <input
+            <select
               data-no-flip
-              type="number"
-              min={2}
-              max={12}
               value={effectiveGuestCount}
-              onChange={(ev) => setGuestCount(Number(ev.target.value || 2))}
-              className="w-28 rounded-xl border border-sage/20 bg-white/60 px-3 py-2.5 text-xs text-zinc-700 outline-none"
-            />
+              onChange={(ev) => setGuestCount(Number(ev.target.value))}
+              className="w-28 rounded-xl border border-sage/20 bg-white/60 px-3 py-2.5 text-xs text-zinc-700 outline-none appearance-none"
+              style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2371717a%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.7rem top 50%', backgroundSize: '0.65rem auto' }}
+            >
+              {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 
         <div className="space-y-2">
-          {(isAttending ? guests : [guests[0]]).map((guest, idx) => (
-            <div key={idx} className="grid grid-cols-1 md:grid-cols-[1fr_140px] gap-2">
-              <input
-                data-no-flip
-                value={guest?.name ?? ""}
-                onChange={(ev) => updateGuest(idx, { name: ev.target.value })}
-                placeholder={
-                  isAttending
-                    ? partyType === "family"
-                      ? `Guest ${idx + 1} name`
-                      : "Your name"
-                    : "Your name"
-                }
-                className="w-full rounded-xl border border-sage/20 bg-white/60 px-3 py-2.5 text-xs text-zinc-700 outline-none"
-              />
-
-              <select
-                data-no-flip
-                disabled={!isAttending}
-                value={guest?.meal ?? "non-veg"}
-                onChange={(ev) => updateGuest(idx, { meal: ev.target.value as MealPreference })}
-                className={`w-full rounded-xl border border-sage/20 bg-white/60 px-3 py-2.5 text-xs text-zinc-700 outline-none ${!isAttending ? "opacity-60" : ""
-                  }`}
-              >
-                <option value="veg">Veg</option>
-                <option value="non-veg">Non-Veg</option>
-              </select>
-            </div>
-          ))}
+          <div className="w-full">
+            <input
+              data-no-flip
+              value={guests[0]?.name ?? ""}
+              onChange={(ev) => updateGuest(0, { name: ev.target.value })}
+              placeholder={partyType === "family" ? "Your name (or Family name)" : "Your name"}
+              className="w-full rounded-xl border border-sage/20 bg-white/60 px-3 py-2.5 text-xs text-zinc-700 outline-none"
+            />
+          </div>
         </div>
 
         {errorMessage && <p className="text-[10px] md:text-xs text-red-700 font-semibold">{errorMessage}</p>}
@@ -484,6 +460,10 @@ function RSVPForm() {
 }
 
 export default function App() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const guestPrefix = searchParams.get("p") || "";
+  const guestName = searchParams.get("n") || "";
+
   const [isFlapOpen, setIsFlapOpen] = useState(false);
   const [isOpened, setIsOpened] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
@@ -583,13 +563,29 @@ export default function App() {
                className="flex flex-col items-center z-10 px-4"
              >
                 <img src="/images/logo.png" alt="Z&H Logo" className="w-20 h-20 md:w-28 md:h-28 object-contain mb-8 opacity-90" />
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 md:w-20 h-[1px] bg-[#B5955C]/60" />
-                  <h2 className="serif text-xs md:text-sm text-[#8B7345] tracking-[0.4em] uppercase font-bold">
-                    You are invited
-                  </h2>
-                  <div className="w-12 md:w-20 h-[1px] bg-[#B5955C]/60" />
-                </div>
+                
+                {guestName ? (
+                  <div className="flex flex-col items-center mb-6">
+                    <p className="serif text-lg md:text-xl text-[#332A19] italic mb-2">
+                      Dear {guestPrefix} {guestName},
+                    </p>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 md:w-20 h-[1px] bg-[#B5955C]/60" />
+                      <h2 className="serif text-[10px] md:text-xs text-[#8B7345] tracking-[0.4em] uppercase font-bold">
+                        You are invited
+                      </h2>
+                      <div className="w-12 md:w-20 h-[1px] bg-[#B5955C]/60" />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 md:w-20 h-[1px] bg-[#B5955C]/60" />
+                    <h2 className="serif text-xs md:text-sm text-[#8B7345] tracking-[0.4em] uppercase font-bold">
+                      You are invited
+                    </h2>
+                    <div className="w-12 md:w-20 h-[1px] bg-[#B5955C]/60" />
+                  </div>
+                )}
 
                 <h1 className="script text-[50px] sm:text-[70px] md:text-[90px] text-[#332A19] mb-12 drop-shadow-sm text-center leading-[1.1]">
                   Stephen & Krishani
@@ -671,8 +667,14 @@ export default function App() {
                     <span className="script text-[50px] md:text-[76px] text-[#332A19] leading-[0.9] drop-shadow-sm">Krishani</span>
                   </div>
 
-                  <p className="serif text-[10px] md:text-xs tracking-[0.2em] text-[#8B7345] uppercase max-w-[220px] md:max-w-sm mb-12 leading-relaxed font-medium">
-                    Invite you to share in the celebration of their marriage
+                  {guestName && (
+                     <div className="mb-6 flex flex-col items-center">
+                        <p className="serif text-lg md:text-xl text-[#332A19] font-medium italic">Dear {guestPrefix} {guestName},</p>
+                     </div>
+                  )}
+
+                  <p className="serif text-[10px] md:text-xs tracking-[0.2em] text-[#8B7345] uppercase max-w-[220px] md:max-w-sm mb-12 leading-relaxed font-medium text-center">
+                    {guestName ? "We cordially invite you to share in the celebration of our marriage" : "Invite you to share in the celebration of their marriage"}
                   </p>
 
                   {/* Interlocking Rings SVG */}
